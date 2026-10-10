@@ -12,7 +12,7 @@ import com.squareup.picasso.Picasso
 
 class RecyclerCouponsAdapter(var coupons : ArrayList<Coupon>, var resource: Int) : RecyclerView.Adapter<RecyclerCouponsAdapter.CardCouponHolder>()  {
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): CardCouponHolder {
-        var view: View = LayoutInflater.from(p0!!.context).inflate(resource, p0, false)
+        val view: View = LayoutInflater.from(p0.context).inflate(resource, p0, false)
         return CardCouponHolder(view)
     }
 
@@ -21,7 +21,7 @@ class RecyclerCouponsAdapter(var coupons : ArrayList<Coupon>, var resource: Int)
     }
 
     override fun onBindViewHolder(p0: CardCouponHolder, p1: Int) {
-        var coupon = coupons.get(p1)
+        val coupon = coupons.get(p1)
         p0.setDataCard(coupon)
     }
 
@@ -40,7 +40,10 @@ class RecyclerCouponsAdapter(var coupons : ArrayList<Coupon>, var resource: Int)
 
         fun setDataCard(coupon: Coupon){
             this.coupon = coupon
-            Picasso.get().load(coupon.image_url).resize(520, 520).centerCrop().into(imgCoupon)
+            // Picasso no admite una URL vacía
+            if (coupon.image_url.isNotEmpty()) {
+                Picasso.get().load(coupon.image_url).resize(520, 520).centerCrop().into(imgCoupon)
+            }
             tvTitle.setText(coupon.title)
             tvDescriptionShort.setText(coupon.descriptionShort)
             tvCategory.setText(coupon.category)
@@ -49,7 +52,7 @@ class RecyclerCouponsAdapter(var coupons : ArrayList<Coupon>, var resource: Int)
         }
 
         override fun onClick(v: View) {
-            Log.i("CLICK Coupon: ", coupon?.title!!)
+            Log.i("CLICK Coupon: ", coupon?.title ?: "")
             val context = v.context
             val showPhotoIntent = Intent(context, CouponDetailActivity::class.java)
             showPhotoIntent.putExtra("COUPON", coupon)
