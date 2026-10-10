@@ -3,9 +3,16 @@ plugins {
     id 'kotlin-android'
 }
 
+// La clave de la API se lee de local.properties (no se sube al repositorio)
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withInputStream { localProperties.load(it) }
+}
+
 android {
+    namespace 'com.example.apparquitectura'
     compileSdkVersion 31
-    buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "com.example.apparquitectura"
@@ -13,6 +20,8 @@ android {
         targetSdkVersion 31
         versionCode 1
         versionName "1.0"
+
+        buildConfigField "String", "LINKMYDEALS_API_KEY", "\"${localProperties.getProperty('LINKMYDEALS_API_KEY', '')}\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -40,7 +49,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
     implementation 'androidx.cardview:cardview:1.0.0'
-    testImplementation 'junit:junit:4.+'
+    testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation 'com.squareup.picasso:picasso:2.71828'

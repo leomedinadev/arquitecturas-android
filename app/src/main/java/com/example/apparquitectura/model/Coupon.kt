@@ -2,41 +2,34 @@ package com.example.apparquitectura.model
 
 import com.google.gson.JsonObject
 import java.io.Serializable
-import java.lang.Exception
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
 class Coupon(couponJson: JsonObject?) : Serializable {
 
-    lateinit var id: String
-    lateinit var image_url: String
-    lateinit var title: String
-    lateinit var descriptionShort: String
-    lateinit var category: String
-    lateinit var description:String
-    lateinit var offer: String
-    lateinit var website: String
-    lateinit var endDate: String
-    lateinit var url: String
+    var id: String = ""
+    var image_url: String = ""
+    var title: String = ""
+    var descriptionShort: String = ""
+    var category: String = ""
+    var description: String = ""
+    var offer: String = ""
+    var website: String = ""
+    var endDate: String = ""
+    var url: String = ""
 
     init {
-        try {
-            id                  = couponJson!!.get(ID).asString
-            image_url           = couponJson!!.get(IMAGE_URL).asString
-            title               = couponJson!!.get(TITLE).asString
-            descriptionShort    = chunkWords(couponJson!!.get(DESCRIPTION_SHORT).asString, ' ', 5)
-            category            = chunkWords(couponJson!!.get(CATEGORY).asString, ',', 1)
-            description         = couponJson!!.get(DESCRIPTION).asString
-            offer               = couponJson!!.get(OFFER).asString
-            website             = couponJson!!.get(WEBSITE).asString
-            endDate             = getFormatDate(couponJson!!.get(END_DATE).asString)
-            url                 = couponJson!!.get(URL).asString
-        }catch (e: Exception){
-            e.printStackTrace()
-        }
-
-
+        id                  = getString(couponJson, ID)
+        image_url           = getString(couponJson, IMAGE_URL)
+        title               = getString(couponJson, TITLE)
+        descriptionShort    = chunkWords(getString(couponJson, DESCRIPTION_SHORT), ' ', 6)
+        category            = chunkWords(getString(couponJson, CATEGORY), ',', 2)
+        description         = getString(couponJson, DESCRIPTION)
+        offer               = getString(couponJson, OFFER)
+        website             = getString(couponJson, WEBSITE)
+        endDate             = getFormatDate(getString(couponJson, END_DATE))
+        url                 = getString(couponJson, URL)
     }
 
     companion object {
@@ -52,29 +45,29 @@ class Coupon(couponJson: JsonObject?) : Serializable {
         private val URL                 = "url"
     }
 
-    private fun getFormatDate(dateCoupon:String):String {
-        val format = SimpleDateFormat("yyyy-MM-dd")
-        val dateFormat = SimpleDateFormat("dd MMMM yyyy")
-        try {
-            val parsedDateFormat = format.parse(dateCoupon)
-            val cal = Calendar.getInstance()
-            cal.time = parsedDateFormat
-            return dateFormat.format(cal.time)
+    // Un campo ausente o nulo queda como cadena vacía, sin afectar al resto del cupón
+    private fun getString(json: JsonObject?, key: String): String {
+        val element = json?.get(key)
+        return if (element != null && element.isJsonPrimitive) element.asString else ""
+    }
+
+    private fun getFormatDate(dateCoupon: String): String {
+        val format = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        val dateFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+        return try {
+            val parsedDate = format.parse(dateCoupon)
+            if (parsedDate != null) dateFormat.format(parsedDate) else ""
         } catch (e: ParseException) {
-            e.printStackTrace()
-            return ""
+            ""
         }
     }
 
-
+    // Devuelve como mucho las primeras `quantity` partes del texto
     private fun chunkWords(string: String, delimiter: Char, quantity: Int): String {
-        val words = string.split(delimiter)
-        var newString: String = ""
-
-        for (i in 0..quantity){
-            newString += words.get(i) + " "
-        }
-
-        return newString
+        return string.split(delimiter)
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .take(quantity)
+            .joinToString(" ")
     }
 }
