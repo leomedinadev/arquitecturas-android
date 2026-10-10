@@ -13,7 +13,7 @@ val call = apiService.getCoupons()
 
 call.enqueue(object : Callback<JsonObject> {
     override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-        Log.e("ERROR: ", t.message)
+        t.message?.let { Log.e("ERROR: ", it) }
         t.stackTrace
     }
 
@@ -32,8 +32,9 @@ call.enqueue(object : Callback<JsonObject> {
 })
 
 
-val apiKey = "69d1837829128f9565368ca704c63207"
-val urlApi = "http://feed.linkmydeals.com/"
+// La clave se define en local.properties (LINKMYDEALS_API_KEY), ver README
+val apiKey = BuildConfig.LINKMYDEALS_API_KEY
+val urlApi = "https://feed.linkmydeals.com/"
 
 fun getClientService(): ApiService {
     val authInterceptor = Interceptor { chain ->
@@ -68,7 +69,7 @@ interface ApiService {
 }
 
 
-CouponDetailActivity.java
+CouponDetailActivity.kt
 
         couponSelected = intent.getSerializableExtra("COUPON") as Coupon
 
@@ -93,8 +94,11 @@ CouponDetailActivity.java
         tvWebsiteDetailData.text = couponSelected?.website
         tvDateEndData.text = couponSelected?.endDate
 
-        Picasso.get().load(couponSelected?.image_url).resize(520, 520).centerCrop().into(imgHeaderDetail)
-        Picasso.get().load(couponSelected?.image_url).resize(520, 520).centerCrop().into(imgCouponDetail)
+        // Picasso no admite una URL vacía
+        if (!couponSelected?.image_url.isNullOrEmpty()) {
+            Picasso.get().load(couponSelected?.image_url).resize(520, 520).centerCrop().into(imgHeaderDetail)
+            Picasso.get().load(couponSelected?.image_url).resize(520, 520).centerCrop().into(imgCouponDetail)
+        }
 
         btnOpenOffer.setOnClickListener {
             val openURL = Intent(Intent.ACTION_VIEW)
