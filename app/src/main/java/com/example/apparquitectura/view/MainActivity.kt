@@ -17,7 +17,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
         supportActionBar?.hide()
         //View
         setUpBindings(savedInstanceState)
@@ -34,7 +33,7 @@ class MainActivity : AppCompatActivity() {
     fun setUpListUpdate() {
         couponViewModel?.callCoupons()
         couponViewModel?.getCoupons()?.observe(this, Observer { coupons: List<Coupon> ->
-            Log.w("COUPONS", coupons.get(0).title)
+            Log.i("COUPONS", "Cupones recibidos: ${coupons.size}")
             couponViewModel?.setCouponsInRecyclerAdapter(coupons)
         })
     }
