@@ -1,13 +1,15 @@
 package com.example.apparquitectura.model
 
+import com.example.apparquitectura.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class ApiAdapter {
-    val apiKey = "69d1837829128f9565368ca704c63207"
-    val urlApi = "http://feed.linkmydeals.com/"
+    // La clave se define en local.properties (LINKMYDEALS_API_KEY), ver README
+    val apiKey = BuildConfig.LINKMYDEALS_API_KEY
+    val urlApi = "https://feed.linkmydeals.com/"
 
     fun getClientService(): IApiService {
         val authInterceptor = Interceptor { chain ->
